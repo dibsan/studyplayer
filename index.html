@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudBuddy </title>
+    <title>StudBuddy</title>
     <link rel="icon" type="image/png" href="buddy.jpg">
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -12,7 +12,6 @@
         * { box-sizing: border-box; transition: all 0.2s ease; }
         body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
-        /* Layout */
         .main-container { display: grid; grid-template-columns: 320px 1fr 320px; flex: 1; overflow: hidden; }
         @media (max-width: 1150px) { .main-container { grid-template-columns: 280px 1fr; } .right-sidebar { display: none; } }
         @media (max-width: 800px) { .main-container { grid-template-columns: 1fr; } .sidebar { display: none; } }
@@ -20,29 +19,23 @@
         .sidebar { background: #000; padding: 15px; display: flex; flex-direction: column; gap: 10px; border-right: 1px solid #222; overflow-y: auto; }
         .nav-card { background: var(--panel); border-radius: 12px; padding: 15px; margin-bottom: 5px; }
         
-        /* Folders & History */
         .folder-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .folder-title { font-size: 10px; font-weight: 800; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1.5px; }
         .del-folder-btn { color: #444; font-size: 12px; cursor: pointer; padding: 2px 5px; }
-        .del-folder-btn:hover { color: var(--red); }
-
+        
         .history-card { background: var(--card); border-radius: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; border: 1px solid #282828; padding: 10px; cursor: pointer; }
-        .history-card:hover { border-color: #444; }
         .video-label { flex: 1; font-size: 11px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .play-thumb { width: 25px; height: 25px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--red); font-size: 10px; flex-shrink: 0; }
 
-        /* Calendar */
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; font-size: 10px; text-align: center; margin-top: 10px; }
         .cal-today { background: var(--red); border-radius: 4px; font-weight: 800; color: white; }
         .cal-head { color: var(--red); font-weight: 800; font-size: 10px; margin-bottom: 5px; display: flex; justify-content: space-between; }
 
-        /* UI Elements */
         .btn-red { background: var(--red); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; }
         .f-input { background: #222; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 8px; width: 100%; outline: none; font-size: 11px; }
         .bottom-bar { background: #000; border-top: 1px solid #222; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; min-height: 80px; }
         .vol-slider { width: 70px; accent-color: var(--red); cursor: pointer; }
 
-        /* Player */
         #floating-cinema { position: absolute; z-index: 9999; width: 520px; height: 400px; top: 10%; left: 30%; background: #000; border-radius: 15px; border: 2px solid #333; overflow: hidden; display: none; flex-direction: column; }
         .drag-handle { height: 40px; background: #181818; cursor: move; display: flex; align-items: center; padding: 0 15px; justify-content: space-between; font-size: 10px; font-weight: 800;}
         #login-overlay { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
@@ -102,10 +95,10 @@
 <div class="bottom-bar">
     <div id="userDisplay" style="font-size:10px; color:#444;">SESSION</div>
     <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
-        <input type="text" id="musicUrl" placeholder="Lo-Fi Link..." class="f-input" style="width:200px; margin:0;">
+        <input type="text" id="musicUrl" placeholder="Lo-Fi YouTube Link..." class="f-input" style="width:200px; margin:0;">
         <div style="display:flex; align-items:center; gap:8px;">
-            <button onclick="playMusic()" style="background:#fff; width:30px; height:30px; border-radius:50%; border:none;">▶</button>
-            <button onclick="pauseMusic()" style="background:#222; color:#fff; width:30px; height:30px; border-radius:50%; border:none;">II</button>
+            <button onclick="playMusic()" style="background:#fff; width:30px; height:30px; border-radius:50%; border:none; cursor:pointer;">▶</button>
+            <button onclick="pauseMusic()" style="background:#222; color:#fff; width:30px; height:30px; border-radius:50%; border:none; cursor:pointer;">II</button>
         </div>
         <div style="display:flex; align-items:center; gap:5px;">
             <span style="font-size:10px;">🔈</span>
@@ -113,28 +106,43 @@
             <span style="font-size:10px;">🔊</span>
         </div>
     </div>
-    <button onclick="shareWhatsApp()" style="background:#25D366; color:white; border:none; padding:8px 15px; border-radius:20px; font-size:10px; font-weight:800;">EXPORT</button>
+    <button onclick="shareWhatsApp()" style="background:#25D366; color:white; border:none; padding:8px 15px; border-radius:20px; font-size:10px; font-weight:800; cursor:pointer;">EXPORT</button>
 </div>
 
 <div id="floating-cinema">
     <div class="drag-handle"><span>VIDEO ENGINE</span><span onclick="togglePlayer()" style="cursor:pointer;">✕</span></div>
-    <div id="player-container" style="flex:1;"></div>
+    <div id="player-container" style="flex:1; background:#000;"></div>
     <div style="padding:10px; background:#121212; display:flex; flex-direction:column; gap:8px;">
         <div style="display:flex; gap:5px;"><input type="text" id="vidUrl" placeholder="YouTube Link..." class="f-input" style="flex:1;"><select id="folderSelect" class="f-input" style="width:100px;"></select></div>
-        <div style="display:flex; gap:5px;"><input type="text" id="vidTitle" placeholder="Custom Name (e.g. Maths Unit 1)..." class="f-input" style="flex:1;"><button onclick="addVideo()" class="btn-red" style="width:80px;">SAVE</button></div>
+        <div style="display:flex; gap:5px;"><input type="text" id="vidTitle" placeholder="Video Name (Click history to edit)..." class="f-input" style="flex:1;"><button onclick="addVideo()" class="btn-red" style="width:80px;">SAVE</button></div>
     </div>
 </div>
 
-<div id="music-player-container" style="display:none"></div>
+<div id="music-player-container" style="position: absolute; top: -9999px; left: -9999px;"></div>
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
     let videoPlayer, musicPlayer, currentEmail = "";
+    let isMusicReady = false;
     let selectedItems = new Set();
-    const DB_KEY = 'study_vault_v36';
+    const DB_KEY = 'study_vault_v37';
 
+    // FIX: Optimized API Loader
     function onYouTubeIframeAPIReady() {
-        musicPlayer = new YT.Player('music-player-container', { height: '0', width: '0', videoId: '' });
+        console.log("YouTube API Ready");
+        musicPlayer = new YT.Player('music-player-container', {
+            height: '0',
+            width: '0',
+            videoId: '',
+            playerVars: { 
+                'origin': window.location.origin,
+                'enablejsapi': 1 
+            },
+            events: {
+                'onReady': () => { isMusicReady = true; console.log("Music Engine Ready"); },
+                'onError': (e) => console.log("Music Error:", e)
+            }
+        });
     }
 
     function login() {
@@ -144,26 +152,33 @@
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('userDisplay').innerText = email;
             initData(); buildCalendar(); startTimer();
-        } else { alert("Use SRMIST Email."); }
+        } else { alert("Please use your SRMIST Email."); }
     }
+
+    function playMusic() {
+        if (!isMusicReady) {
+            console.log("Music Player not ready, retrying in 1s...");
+            setTimeout(playMusic, 1000); // Auto-retry logic
+            return;
+        }
+        const urlInput = document.getElementById('musicUrl').value;
+        const id = urlInput.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|\/embed\/))([^?&]+)/)?.[1];
+        if (id) {
+            musicPlayer.loadVideoById(id);
+            musicPlayer.playVideo();
+        } else { alert("Paste a valid YouTube link first!"); }
+    }
+
+    function pauseMusic() { if(isMusicReady) musicPlayer.pauseVideo(); }
+    function setMusicVolume(v) { if(isMusicReady) musicPlayer.setVolume(v); }
+
+    // --- All Other Features ---
 
     function initData() {
         let data = JSON.parse(localStorage.getItem(DB_KEY) || '{}');
         if(!data[currentEmail]) data[currentEmail] = { folders: ["Main"], videos: [], tasks: [] };
         localStorage.setItem(DB_KEY, JSON.stringify(data));
         renderLibrary(); renderTasks();
-    }
-
-    function buildCalendar() {
-        const now = new Date();
-        document.getElementById('calMonth').innerText = now.toLocaleString('default', { month: 'long' }).toUpperCase();
-        document.getElementById('calYear').innerText = now.getFullYear();
-        const grid = document.getElementById('calGrid');
-        grid.innerHTML = ["S","M","T","W","T","F","S"].map(d => `<div style="color:#555; font-weight:800;">${d}</div>`).join('');
-        const first = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
-        const total = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-        for(let i=0; i<first; i++) grid.innerHTML += `<div></div>`;
-        for(let d=1; d<=total; d++) grid.innerHTML += `<div class="${d===now.getDate()?'cal-today':''}" style="padding:4px;">${d}</div>`;
     }
 
     function renderLibrary() {
@@ -187,29 +202,10 @@
         }).join('');
     }
 
-    function addFolder() {
-        const name = document.getElementById('folderInput').value.trim();
-        if(!name) return;
-        let d = JSON.parse(localStorage.getItem(DB_KEY));
-        if(d[currentEmail].folders.includes(name)) return alert("Folder exists");
-        d[currentEmail].folders.push(name);
-        localStorage.setItem(DB_KEY, JSON.stringify(d));
-        document.getElementById('folderInput').value = ""; renderLibrary();
-    }
-
-    function deleteFolder(fName) {
-        if(!confirm(`Delete folder "${fName}" and all videos inside?`)) return;
-        let d = JSON.parse(localStorage.getItem(DB_KEY));
-        d[currentEmail].folders = d[currentEmail].folders.filter(f => f !== fName);
-        d[currentEmail].videos = d[currentEmail].videos.filter(v => v.folder !== fName);
-        localStorage.setItem(DB_KEY, JSON.stringify(d));
-        renderLibrary();
-    }
-
     function renameVideo(ts) {
         let data = JSON.parse(localStorage.getItem(DB_KEY));
         let vid = data[currentEmail].videos.find(v => v.ts === ts);
-        let n = prompt("New Name:", vid.title || vid.id);
+        let n = prompt("Edit Video Name:", vid.title || vid.id);
         if(n) { vid.title = n; localStorage.setItem(DB_KEY, JSON.stringify(data)); renderLibrary(); }
     }
 
@@ -225,6 +221,36 @@
         }
     }
 
+    function addFolder() {
+        const name = document.getElementById('folderInput').value.trim();
+        if(!name) return;
+        let d = JSON.parse(localStorage.getItem(DB_KEY));
+        if(!d[currentEmail].folders.includes(name)) {
+            d[currentEmail].folders.push(name);
+            localStorage.setItem(DB_KEY, JSON.stringify(d));
+            document.getElementById('folderInput').value = ""; renderLibrary();
+        }
+    }
+
+    function deleteFolder(fName) {
+        if(!confirm(`Delete folder "${fName}" and its videos?`)) return;
+        let d = JSON.parse(localStorage.getItem(DB_KEY));
+        d[currentEmail].folders = d[currentEmail].folders.filter(f => f !== fName);
+        d[currentEmail].videos = d[currentEmail].videos.filter(v => v.folder !== fName);
+        localStorage.setItem(DB_KEY, JSON.stringify(d));
+        renderLibrary();
+    }
+
+    function launchVideo(id) {
+        document.getElementById('floating-cinema').style.display = 'flex';
+        if (!videoPlayer) {
+            videoPlayer = new YT.Player('player-container', { 
+                height: '100%', width: '100%', videoId: id,
+                playerVars: { 'origin': window.location.origin }
+            });
+        } else { videoPlayer.loadVideoById(id); }
+    }
+
     function toggleSelect(ts) {
         if(selectedItems.has(ts)) selectedItems.delete(ts); else selectedItems.add(ts);
         document.getElementById('multiDeleteBtn').style.display = selectedItems.size > 0 ? 'block' : 'none';
@@ -232,23 +258,25 @@
     }
 
     function deleteSelected() {
-        if(!confirm("Delete?")) return;
+        if(!confirm("Delete selected videos?")) return;
         let data = JSON.parse(localStorage.getItem(DB_KEY));
         data[currentEmail].videos = data[currentEmail].videos.filter(v => !selectedItems.has(v.ts));
         localStorage.setItem(DB_KEY, JSON.stringify(data));
         selectedItems.clear(); renderLibrary();
     }
 
-    function launchVideo(id) {
-        document.getElementById('floating-cinema').style.display = 'flex';
-        if (!videoPlayer) videoPlayer = new YT.Player('player-container', { height: '100%', width: '100%', videoId: id });
-        else videoPlayer.loadVideoById(id);
+    function buildCalendar() {
+        const now = new Date();
+        document.getElementById('calMonth').innerText = now.toLocaleString('default', { month: 'long' }).toUpperCase();
+        document.getElementById('calYear').innerText = now.getFullYear();
+        const grid = document.getElementById('calGrid');
+        grid.innerHTML = ["S","M","T","W","T","F","S"].map(d => `<div style="color:#555; font-weight:800;">${d}</div>`).join('');
+        const first = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
+        const total = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+        for(let i=0; i<first; i++) grid.innerHTML += `<div></div>`;
+        for(let d=1; d<=total; d++) grid.innerHTML += `<div class="${d===now.getDate()?'cal-today':''}" style="padding:4px;">${d}</div>`;
     }
 
-    function setMusicVolume(v) { if(musicPlayer) musicPlayer.setVolume(v); }
-    function playMusic() { const id = document.getElementById('musicUrl').value.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|\/embed\/))([^?&]+)/)?.[1]; if(id) musicPlayer.loadVideoById(id); }
-    function pauseMusic() { musicPlayer.pauseVideo(); }
-    function startTimer() { let s = Date.now(); setInterval(() => { document.getElementById('timer').innerText = new Date(Date.now() - s).toISOString().substr(11, 8); }, 1000); }
     function addTask() { 
         let d = JSON.parse(localStorage.getItem(DB_KEY));
         d[currentEmail].tasks.push({text: document.getElementById('taskInput').value, ts: Date.now()});
@@ -264,11 +292,13 @@
         d[currentEmail].tasks = d[currentEmail].tasks.filter(t => t.ts !== ts);
         localStorage.setItem(DB_KEY, JSON.stringify(d)); renderTasks();
     }
+    function startTimer() { let s = Date.now(); setInterval(() => { document.getElementById('timer').innerText = new Date(Date.now() - s).toISOString().substr(11, 8); }, 1000); }
     function togglePlayer() { const p = document.getElementById('floating-cinema'); p.style.display = p.style.display === 'flex' ? 'none' : 'flex'; }
     function handlePDF(i) { if(i.files[0]) document.getElementById('pdfFrame').src = URL.createObjectURL(i.files[0]); }
     function shareWhatsApp() {
         let data = JSON.parse(localStorage.getItem(DB_KEY))[currentEmail];
-        window.open(`https://wa.me/?text=${encodeURIComponent("STUDY LOG:\n"+data.videos.map(v=> (v.title||v.id) + ": https://youtu.be/"+v.id).join("\n"))}`);
+        let text = "My Study Log:\n" + data.videos.map(v => `${v.title || v.id}: https://youtu.be/${v.id}`).join('\n');
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
     }
 
     interact('#floating-cinema').draggable({ allowFrom: '.drag-handle', listeners: { move(e) {
