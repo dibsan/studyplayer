@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudBuddy</title>
+    <title>StudBuddy </title>
     <link rel="icon" type="image/png" href="buddy.jpg">
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -20,8 +20,12 @@
         .sidebar { background: #000; padding: 15px; display: flex; flex-direction: column; gap: 10px; border-right: 1px solid #222; overflow-y: auto; }
         .nav-card { background: var(--panel); border-radius: 12px; padding: 15px; margin-bottom: 5px; }
         
-        /* History & Folders */
-        .folder-title { font-size: 10px; font-weight: 800; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; display: block; }
+        /* Folders & History */
+        .folder-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .folder-title { font-size: 10px; font-weight: 800; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1.5px; }
+        .del-folder-btn { color: #444; font-size: 12px; cursor: pointer; padding: 2px 5px; }
+        .del-folder-btn:hover { color: var(--red); }
+
         .history-card { background: var(--card); border-radius: 10px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; border: 1px solid #282828; padding: 10px; cursor: pointer; }
         .history-card:hover { border-color: #444; }
         .video-label { flex: 1; font-size: 11px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -32,7 +36,7 @@
         .cal-today { background: var(--red); border-radius: 4px; font-weight: 800; color: white; }
         .cal-head { color: var(--red); font-weight: 800; font-size: 10px; margin-bottom: 5px; display: flex; justify-content: space-between; }
 
-        /* General UI */
+        /* UI Elements */
         .btn-red { background: var(--red); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; }
         .f-input { background: #222; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 8px; width: 100%; outline: none; font-size: 11px; }
         .bottom-bar { background: #000; border-top: 1px solid #222; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; min-height: 80px; }
@@ -62,7 +66,7 @@
         </div>
         <div class="nav-card" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
             <span class="folder-title">Folders</span>
-            <input type="text" id="folderInput" placeholder="+ New Folder..." class="f-input" style="margin-bottom:10px;" onkeydown="if(event.key==='Enter') addFolder()">
+            <input type="text" id="folderInput" placeholder="+ New Folder..." class="f-input" style="margin:10px 0;" onkeydown="if(event.key==='Enter') addFolder()">
             <div id="libraryList" style="flex:1; overflow-y:auto;"></div>
             <button id="multiDeleteBtn" class="btn-red" onclick="deleteSelected()" style="display:none; margin-top:10px; background:#444;">DELETE SELECTED</button>
         </div>
@@ -127,6 +131,7 @@
 <script>
     let videoPlayer, musicPlayer, currentEmail = "";
     let selectedItems = new Set();
+    const DB_KEY = 'study_vault_v36';
 
     function onYouTubeIframeAPIReady() {
         musicPlayer = new YT.Player('music-player-container', { height: '0', width: '0', videoId: '' });
@@ -143,9 +148,9 @@
     }
 
     function initData() {
-        let data = JSON.parse(localStorage.getItem('study_vault_v35') || '{}');
+        let data = JSON.parse(localStorage.getItem(DB_KEY) || '{}');
         if(!data[currentEmail]) data[currentEmail] = { folders: ["Main"], videos: [], tasks: [] };
-        localStorage.setItem('study_vault_v35', JSON.stringify(data));
+        localStorage.setItem(DB_KEY, JSON.stringify(data));
         renderLibrary(); renderTasks();
     }
 
@@ -162,27 +167,50 @@
     }
 
     function renderLibrary() {
-        let data = JSON.parse(localStorage.getItem('study_vault_v35'))[currentEmail];
+        let data = JSON.parse(localStorage.getItem(DB_KEY))[currentEmail];
         const list = document.getElementById('libraryList');
         document.getElementById('folderSelect').innerHTML = data.folders.map(f => `<option value="${f}">${f}</option>`).join('');
+        
         list.innerHTML = data.folders.map(fName => {
             const vids = data.videos.filter(v => v.folder === fName);
-            return `<div style="margin-bottom:15px;"><span class="folder-title">${fName}</span>
+            return `<div style="margin-bottom:15px;">
+                <div class="folder-header">
+                    <span class="folder-title">${fName}</span>
+                    ${fName !== 'Main' ? `<span class="del-folder-btn" onclick="deleteFolder('${fName}')">🗑️</span>` : ''}
+                </div>
                 ${vids.map(v => `
-                    <div class="history-card ${selectedItems.has(v.ts)?'selected':''}" onclick="launchVideo('${v.id}')">
+                    <div class="history-card" onclick="launchVideo('${v.id}')">
                         <input type="checkbox" onclick="event.stopPropagation(); toggleSelect(${v.ts})" ${selectedItems.has(v.ts)?'checked':''}>
                         <div class="play-thumb">▶</div>
                         <div class="video-label" onclick="event.stopPropagation(); renameVideo(${v.ts})">${v.title || v.id}</div>
-                        <div style="color:#555; font-size:12px;" onclick="event.stopPropagation(); copyLink('${v.id}')">🔗</div>
                     </div>`).join('')}</div>`;
         }).join('');
     }
 
+    function addFolder() {
+        const name = document.getElementById('folderInput').value.trim();
+        if(!name) return;
+        let d = JSON.parse(localStorage.getItem(DB_KEY));
+        if(d[currentEmail].folders.includes(name)) return alert("Folder exists");
+        d[currentEmail].folders.push(name);
+        localStorage.setItem(DB_KEY, JSON.stringify(d));
+        document.getElementById('folderInput').value = ""; renderLibrary();
+    }
+
+    function deleteFolder(fName) {
+        if(!confirm(`Delete folder "${fName}" and all videos inside?`)) return;
+        let d = JSON.parse(localStorage.getItem(DB_KEY));
+        d[currentEmail].folders = d[currentEmail].folders.filter(f => f !== fName);
+        d[currentEmail].videos = d[currentEmail].videos.filter(v => v.folder !== fName);
+        localStorage.setItem(DB_KEY, JSON.stringify(d));
+        renderLibrary();
+    }
+
     function renameVideo(ts) {
-        let data = JSON.parse(localStorage.getItem('study_vault_v35'));
+        let data = JSON.parse(localStorage.getItem(DB_KEY));
         let vid = data[currentEmail].videos.find(v => v.ts === ts);
         let n = prompt("New Name:", vid.title || vid.id);
-        if(n) { vid.title = n; localStorage.setItem('study_vault_v35', JSON.stringify(data)); renderLibrary(); }
+        if(n) { vid.title = n; localStorage.setItem(DB_KEY, JSON.stringify(data)); renderLibrary(); }
     }
 
     function addVideo() {
@@ -190,9 +218,9 @@
         const title = document.getElementById('vidTitle').value.trim();
         const id = url.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|\/embed\/))([^?&]+)/)?.[1];
         if(id) {
-            let data = JSON.parse(localStorage.getItem('study_vault_v35'));
+            let data = JSON.parse(localStorage.getItem(DB_KEY));
             data[currentEmail].videos.push({ id, title: title || id, folder: document.getElementById('folderSelect').value, ts: Date.now() });
-            localStorage.setItem('study_vault_v35', JSON.stringify(data));
+            localStorage.setItem(DB_KEY, JSON.stringify(data));
             renderLibrary(); document.getElementById('vidUrl').value = ""; document.getElementById('vidTitle').value = "";
         }
     }
@@ -205,9 +233,9 @@
 
     function deleteSelected() {
         if(!confirm("Delete?")) return;
-        let data = JSON.parse(localStorage.getItem('study_vault_v35'));
+        let data = JSON.parse(localStorage.getItem(DB_KEY));
         data[currentEmail].videos = data[currentEmail].videos.filter(v => !selectedItems.has(v.ts));
-        localStorage.setItem('study_vault_v35', JSON.stringify(data));
+        localStorage.setItem(DB_KEY, JSON.stringify(data));
         selectedItems.clear(); renderLibrary();
     }
 
@@ -222,30 +250,24 @@
     function pauseMusic() { musicPlayer.pauseVideo(); }
     function startTimer() { let s = Date.now(); setInterval(() => { document.getElementById('timer').innerText = new Date(Date.now() - s).toISOString().substr(11, 8); }, 1000); }
     function addTask() { 
-        let d = JSON.parse(localStorage.getItem('study_vault_v35'));
+        let d = JSON.parse(localStorage.getItem(DB_KEY));
         d[currentEmail].tasks.push({text: document.getElementById('taskInput').value, ts: Date.now()});
-        localStorage.setItem('study_vault_v35', JSON.stringify(d)); 
+        localStorage.setItem(DB_KEY, JSON.stringify(d)); 
         document.getElementById('taskInput').value = ""; renderTasks();
     }
     function renderTasks() {
-        let d = JSON.parse(localStorage.getItem('study_vault_v35'))[currentEmail];
+        let d = JSON.parse(localStorage.getItem(DB_KEY))[currentEmail];
         document.getElementById('taskList').innerHTML = d.tasks.map(t => `<div style="background:#181818; padding:8px; border-radius:5px; margin-bottom:5px; font-size:11px; display:flex; justify-content:space-between;">${t.text}<span onclick="deleteTask(${t.ts})" style="color:red; cursor:pointer;">✕</span></div>`).join('');
     }
     function deleteTask(ts) {
-        let d = JSON.parse(localStorage.getItem('study_vault_v35'));
+        let d = JSON.parse(localStorage.getItem(DB_KEY));
         d[currentEmail].tasks = d[currentEmail].tasks.filter(t => t.ts !== ts);
-        localStorage.setItem('study_vault_v35', JSON.stringify(d)); renderTasks();
-    }
-    function addFolder() {
-        let d = JSON.parse(localStorage.getItem('study_vault_v35'));
-        d[currentEmail].folders.push(document.getElementById('folderInput').value);
-        localStorage.setItem('study_vault_v35', JSON.stringify(d)); renderLibrary();
+        localStorage.setItem(DB_KEY, JSON.stringify(d)); renderTasks();
     }
     function togglePlayer() { const p = document.getElementById('floating-cinema'); p.style.display = p.style.display === 'flex' ? 'none' : 'flex'; }
     function handlePDF(i) { if(i.files[0]) document.getElementById('pdfFrame').src = URL.createObjectURL(i.files[0]); }
-    function copyLink(id) { navigator.clipboard.writeText('https://youtu.be/'+id); alert("Link Copied!"); }
     function shareWhatsApp() {
-        let data = JSON.parse(localStorage.getItem('study_vault_v35'))[currentEmail];
+        let data = JSON.parse(localStorage.getItem(DB_KEY))[currentEmail];
         window.open(`https://wa.me/?text=${encodeURIComponent("STUDY LOG:\n"+data.videos.map(v=> (v.title||v.id) + ": https://youtu.be/"+v.id).join("\n"))}`);
     }
 
