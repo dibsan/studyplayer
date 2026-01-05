@@ -3,145 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StudyBuddy | SRM IST Premium</title>
+    <title>StudyBuddy | SRM IST Ultimate v30</title>
     <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --red: #E50914; --bg: #000; --panel: #121212; --card: #1c1c1c; --text-gray: #b3b3b3; }
-        
         * { box-sizing: border-box; transition: all 0.2s ease; }
         body { 
             background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; 
             margin: 0; display: grid; 
             grid-template-columns: 320px 1fr 320px; 
-            grid-template-rows: 1fr 100px; 
+            grid-template-rows: 1fr 80px;
             height: 100vh; overflow: hidden; 
         }
 
-        /* --- LOGIN --- */
-        #login-overlay { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-        .netflix-logo { font-family: 'Bebas Neue'; font-size: 5rem; color: var(--red); letter-spacing: 4px; }
-
-        /* --- SIDEBAR & PLAYLISTS --- */
-        .sidebar { background: #000; padding: 15px; display: flex; flex-direction: column; gap: 10px; border-right: 1px solid #222; }
+        /* --- SIDEBARS --- */
+        .sidebar { background: #000; padding: 15px; display: flex; flex-direction: column; gap: 10px; border-right: 1px solid #222; overflow-y: auto; }
+        .right-sidebar { border-right: none; border-left: 1px solid #222; }
         .nav-card { background: var(--panel); border-radius: 12px; padding: 15px; margin-bottom: 5px; }
         
-        .library-section { flex: 1; overflow-y: auto; margin-top: 15px; padding-right: 5px; }
-        .folder-unit { margin-bottom: 25px; }
-        .folder-title { font-size: 11px; font-weight: 800; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; display: block; }
-        
-        /* --- PREMIUM PLAYABLE CARDS --- */
+        /* --- HISTORY --- */
+        .folder-title { font-size: 10px; font-weight: 800; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 10px; display: block; }
         .history-card { 
-            background: var(--card); border-radius: 12px; margin-bottom: 10px; 
-            display: flex; align-items: center; gap: 10px; border: 1px solid #282828; 
-            position: relative; overflow: hidden; cursor: pointer; padding: 10px;
+            background: var(--card); border-radius: 10px; margin-bottom: 8px; 
+            display: flex; align-items: center; gap: 8px; border: 1px solid #282828; 
+            padding: 10px; cursor: pointer; position: relative;
         }
-        .history-card:hover { background: #252525; border-color: #444; transform: scale(1.02); }
+        .history-card:hover { border-color: #444; transform: translateX(5px); }
         .history-card.selected { border-color: var(--red); background: #2a0000; }
-        
-        .play-thumb { 
-            width: 40px; height: 40px; background: #333; border-radius: 8px; 
-            display: flex; align-items: center; justify-content: center; 
-            color: var(--red); font-size: 18px; flex-shrink: 0;
-        }
+        .play-thumb { width: 30px; height: 30px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--red); font-size: 12px; }
 
-        .card-info { flex: 1; overflow: hidden; }
-        .card-info span { display: block; font-size: 11px; font-weight: 700; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        
-        .custom-check { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #444; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .history-card.selected .custom-check { background: var(--red); border-color: var(--red); }
+        /* --- CALENDAR --- */
+        .mini-calendar { width: 100%; color: #fff; font-size: 11px; text-align: center; }
+        .cal-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 800; color: var(--red); font-size: 10px; }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+        .cal-day { padding: 4px; border-radius: 4px; }
+        .cal-today { background: var(--red); color: white; font-weight: 800; }
+        .cal-weekday { color: #555; font-size: 9px; font-weight: 800; }
 
-        .copy-link-icon { font-size: 12px; color: #555; padding: 5px; cursor: pointer; }
-        .copy-link-icon:hover { color: #fff; }
+        /* --- UI ELEMENTS --- */
+        .btn-red { background: var(--red); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 800; cursor: pointer; width: 100%; }
+        .f-input { background: #222; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 8px; width: 100%; outline: none; font-size: 11px; }
+        .bottom-bar { grid-column: 1 / -1; background: #000; border-top: 1px solid #222; display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
+        .volume-slider { width: 80px; accent-color: var(--red); cursor: pointer; }
 
-        /* --- FLOATING CINEMA (THE PLAYER) --- */
+        /* --- PLAYER POPUP --- */
         #floating-cinema { 
-            position: absolute; z-index: 9999; width: 550px; height: 350px; top: 50px; left: 350px; 
+            position: absolute; z-index: 9999; width: 500px; height: 320px; top: 10%; left: 30%; 
             background: #000; border-radius: 15px; border: 2px solid #333; overflow: hidden; 
             display: none; flex-direction: column; box-shadow: 0 40px 100px rgba(0,0,0,1);
         }
-        .drag-handle { height: 45px; background: #181818; cursor: move; display: flex; align-items: center; padding: 0 15px; font-size: 11px; font-weight: 800; justify-content: space-between; border-bottom: 1px solid #222; }
-
-        /* --- UI COMPONENTS --- */
-        .f-input { background: #222; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; width: 100%; outline: none; font-size: 12px; }
-        .btn-red { background: var(--red); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+        .drag-handle { height: 40px; background: #181818; cursor: move; display: flex; align-items: center; padding: 0 15px; font-size: 10px; font-weight: 800; justify-content: space-between; }
         
-        #toast { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 10px 25px; border-radius: 5px; font-size: 12px; font-weight: 900; display: none; z-index: 100001; }
+        #login-overlay { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
     </style>
 </head>
 <body>
 
-<div id="toast">LINK COPIED!</div>
-
 <div id="login-overlay">
-    <div class="netflix-logo">STUDYBUDDY</div>
-    <div style="width: 320px; text-align: center; margin-top: 20px;">
-        <input type="email" id="userEmail" class="f-input" placeholder="dp4652@srmist.edu.in">
-        <button onclick="login()" class="btn-red" style="width:100%; margin-top:15px; padding:15px;">OPEN DASHBOARD</button>
+    <div style="font-family:'Bebas Neue'; font-size:4rem; color:var(--red); letter-spacing:4px;">STUDYBUDDY</div>
+    <div style="width: 280px; text-align: center; margin-top:20px;">
+        <input type="email" id="userEmail" class="f-input" style="padding:15px" placeholder="SRM Email ID">
+        <button onclick="login()" class="btn-red" style="padding:15px; margin-top:15px;">LOGIN</button>
     </div>
 </div>
 
 <div class="sidebar">
     <div class="nav-card">
-        <div style="font-weight:900; color:var(--red); font-size:20px; margin-bottom:10px;">SRM SYNC v24</div>
-        <button onclick="togglePlayer()" class="btn-red" style="width:100%; background:#222; font-size:10px;">📺 SHOW VIDEO PLAYER</button>
+        <div style="font-weight:900; color:var(--red); font-size:18px;">SRM SYNC</div>
+        <button onclick="togglePlayer()" class="btn-red" style="background:#222; font-size:10px; margin-top:10px;">📺 OPEN PLAYER</button>
     </div>
-    
-    <div class="nav-card" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
-        <span class="folder-title">Saved History</span>
-        <input type="text" id="folderInput" placeholder="+ Create Playlist..." class="f-input" onkeydown="if(event.key==='Enter') addFolder()">
-        
-        <div id="libraryList" class="library-section"></div>
-        
-        <button id="multiDeleteBtn" class="btn-red" onclick="deleteSelected()" style="display:none; margin-top:10px;">DELETE SELECTED</button>
-    </div>
-
-    <div class="nav-card">
-        <button onclick="document.getElementById('pdfInput').click()" style="background:transparent; border:1px dashed #444; color:#555; width:100%; padding:10px; border-radius:8px; cursor:pointer; font-size:10px;">+ UPLOAD STUDY PDF</button>
-        <input type="file" id="pdfInput" accept=".pdf" onchange="handlePDF(this)" style="display:none;">
+    <div class="nav-card" style="flex:1;">
+        <span class="folder-title">Folders</span>
+        <input type="text" id="folderInput" placeholder="+ New Folder..." class="f-input" style="margin-bottom:10px;" onkeydown="if(event.key==='Enter') addFolder()">
+        <div id="libraryList"></div>
     </div>
 </div>
 
-<div style="padding:15px; background: linear-gradient(to bottom, #111, #000); display:flex; flex-direction:column; gap:15px;">
+<div style="padding:15px; background: #000; display:flex; flex-direction:column; gap:15px;">
     <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h2 style="margin:0; font-family:'Bebas Neue'; letter-spacing:1px; font-size:2.5rem;">CORE ENGINE</h2>
-        <div id="timer" style="font-family:monospace; color:var(--red); font-weight:900; font-size:1.5rem;">00:00:00</div>
+        <h2 style="margin:0; font-family:'Bebas Neue'; font-size:2rem;">DASHBOARD</h2>
+        <div id="timer" style="font-family:monospace; color:var(--red); font-weight:900; font-size:1.2rem;">00:00:00</div>
     </div>
-    <div style="flex:1; border-radius:15px; overflow:hidden; border:1px solid #333; background:#000;">
+    <div style="flex:1; border-radius:15px; overflow:hidden; border:1px solid #222;">
         <iframe id="pdfFrame" style="width:100%; height:100%; border:none;"></iframe>
     </div>
 </div>
 
-<div style="background:#000; border-left:1px solid #222; padding:15px;">
-    <span class="folder-title">Academic Schedule</span>
-    <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23000000&ctz=Asia%2FKolkata&showTitle=0&showNav=0&showPrint=0&showTabs=0&showCalendars=0&mode=AGENDA&src=ZW4uaW5kaWFuI2hvbGlkYXlAdjEuaW5ncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20" 
-    style="border:none; width:100%; height:100%; border-radius:10px; filter: invert(90%) hue-rotate(180deg);"></iframe>
+<div class="sidebar right-sidebar">
+    <div class="nav-card">
+        <button onclick="document.getElementById('pdfInput').click()" style="background:transparent; border:1px dashed #444; color:#777; width:100%; padding:15px; cursor:pointer; border-radius:8px; font-size:10px;">+ UPLOAD PDF</button>
+        <input type="file" id="pdfInput" accept=".pdf" onchange="handlePDF(this)" style="display:none;">
+    </div>
+    <div class="nav-card">
+        <div class="mini-calendar" id="calendar"><div class="cal-header"><span id="calMonth"></span><span id="calYear"></span></div><div class="cal-grid" id="calGrid"></div></div>
+    </div>
+    <div class="nav-card" style="flex:1;">
+        <span class="folder-title">Tasks</span>
+        <input type="text" id="taskInput" placeholder="Add task..." class="f-input" onkeydown="if(event.key==='Enter') addTask()">
+        <div id="taskList" style="margin-top:10px;"></div>
+    </div>
 </div>
 
-<div style="grid-column: 1 / -1; background: #000; border-top: 1px solid #222; display: flex; align-items: center; justify-content: space-between; padding: 0 30px;">
-    <div style="width:250px; font-size:11px; color:#444;" id="userDisplay">STUDYING...</div>
-
+<div class="bottom-bar">
+    <div style="width:200px; font-size:10px; color:#444;" id="userDisplay">...</div>
     <div style="display:flex; align-items:center; gap:15px;">
-        <input type="text" id="musicUrl" placeholder="Paste Lofi Link..." class="f-input" style="width:300px; background:#111;">
-        <button onclick="playMusic()" style="background:#fff; color:#000; border:none; width:40px; height:40px; border-radius:50%; font-weight:900; cursor:pointer;">▶</button>
-        <button onclick="pauseMusic()" style="background:#222; color:#fff; border:none; width:40px; height:40px; border-radius:50%; font-weight:900; cursor:pointer;">II</button>
+        <input type="text" id="musicUrl" placeholder="Music Link..." class="f-input" style="width:250px; margin:0;">
+        <button onclick="playMusic()" style="background:#fff; width:35px; height:35px; border-radius:50%; border:none; cursor:pointer;">▶</button>
+        <button onclick="pauseMusic()" style="background:#222; color:#fff; width:35px; height:35px; border-radius:50%; border:none; cursor:pointer;">II</button>
+        <div style="display:flex; align-items:center; gap:5px; margin-left:10px;">
+            <span style="font-size:10px;">🔈</span>
+            <input type="range" class="volume-slider" min="0" max="100" value="50" oninput="setMusicVolume(this.value)">
+            <span style="font-size:10px;">🔊</span>
+        </div>
     </div>
-
-    <div style="width:250px; display:flex; justify-content:flex-end;">
-        <button onclick="shareWhatsApp()" class="btn-red" style="background:#25D366; font-size:11px;">WHATSAPP EXPORT</button>
+    <div style="width:200px; text-align:right;">
+        <button onclick="shareWhatsApp()" style="background:#25D366; color:white; border:none; padding:8px 15px; border-radius:20px; font-size:10px; font-weight:800; cursor:pointer;">WHATSAPP LOG</button>
     </div>
 </div>
 
 <div id="floating-cinema">
     <div class="drag-handle">
-        <span id="playerStatus">NOW STREAMING</span>
-        <span onclick="togglePlayer()" style="cursor:pointer; color:#777;">✕</span>
+        <span id="playerStatus">READY</span>
+        <span onclick="togglePlayer()" style="cursor:pointer;">✕</span>
     </div>
     <div id="player-container" style="flex:1;"></div>
-    <div style="padding:15px; background:#121212; display:flex; gap:10px; border-top:1px solid #222;">
-        <input type="text" id="vidUrl" placeholder="Add New YouTube Link..." class="f-input" style="flex:1;">
-        <select id="folderSelect" class="f-input" style="width:100px;"></select>
-        <button onclick="addVideo()" class="btn-red">SAVE</button>
+    <div style="padding:10px; background:#121212; display:flex; gap:8px;">
+        <input type="text" id="vidUrl" placeholder="Paste YouTube Link..." class="f-input" style="flex:1; margin:0;">
+        <select id="folderSelect" class="f-input" style="width:90px; margin:0;"></select>
+        <button onclick="addVideo()" class="btn-red" style="width:60px; margin:0;">SAVE</button>
     </div>
 </div>
 
@@ -149,150 +139,143 @@
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-    let videoPlayer, musicPlayer, currentEmail = "", isReady = false;
-    let selectedItems = new Set();
+    let videoPlayer, musicPlayer, currentEmail = "", isYTReady = false;
 
+    // YT Ready logic
     function onYouTubeIframeAPIReady() {
-        videoPlayer = new YT.Player('player-container', {
-            height: '100%', width: '100%', videoId: '',
-            playerVars: { 'autoplay': 1, 'controls': 1 },
-            events: { 'onReady': () => { isReady = true; } }
-        });
+        isYTReady = true;
         musicPlayer = new YT.Player('music-player-container', { height: '0', width: '0', videoId: '' });
+    }
+
+    function launchVideo(id) {
+        document.getElementById('floating-cinema').style.display = 'flex';
+        
+        // Fix: Agar GitHub pe load hone mein time le raha ho
+        const play = () => {
+            if (videoPlayer && typeof videoPlayer.loadVideoById === 'function') {
+                videoPlayer.loadVideoById(id);
+            } else {
+                videoPlayer = new YT.Player('player-container', {
+                    height: '100%', width: '100%', videoId: id,
+                    events: { 'onReady': (e) => e.target.playVideo() }
+                });
+            }
+        };
+
+        if (!isYTReady) {
+            setTimeout(play, 1000); // 1 sec wait for API
+        } else {
+            play();
+        }
+        document.getElementById('playerStatus').innerText = "STREAMING: " + id;
     }
 
     function login() {
         const email = document.getElementById('userEmail').value.trim().toLowerCase();
         if(email.endsWith("@srmist.edu.in")) {
             currentEmail = email;
-            document.getElementById('userDisplay').innerText = "USER: " + email;
             document.getElementById('login-overlay').style.display = 'none';
-            initData();
-            startTimer();
-        } else { alert("Please use SRMIST Email ID."); }
-    }
-
-    function startTimer() {
-        let start = Date.now();
-        setInterval(() => {
-            let d = new Date(Date.now() - start);
-            document.getElementById('timer').innerText = d.toISOString().substr(11, 8);
-        }, 1000);
+            document.getElementById('userDisplay').innerText = email;
+            initData(); buildCalendar(); startTimer();
+        } else { alert("Use SRMIST Email."); }
     }
 
     function initData() {
-        let data = JSON.parse(localStorage.getItem('study_vault_v24') || '{}');
-        if(!data[currentEmail]) {
-            data[currentEmail] = { folders: ["Main Study"], videos: [] };
-            localStorage.setItem('study_vault_v24', JSON.stringify(data));
-        }
-        renderLibrary();
+        let data = JSON.parse(localStorage.getItem('study_vault_v30') || '{}');
+        if(!data[currentEmail]) data[currentEmail] = { folders: ["Main"], videos: [], tasks: [] };
+        localStorage.setItem('study_vault_v30', JSON.stringify(data));
+        renderLibrary(); renderTasks();
     }
 
     function renderLibrary() {
+        let data = JSON.parse(localStorage.getItem('study_vault_v30'))[currentEmail];
         const list = document.getElementById('libraryList');
-        const select = document.getElementById('folderSelect');
-        let data = JSON.parse(localStorage.getItem('study_vault_v24'))[currentEmail];
+        document.getElementById('folderSelect').innerHTML = data.folders.map(f => `<option value="${f}">${f}</option>`).join('');
         
-        select.innerHTML = data.folders.map(f => `<option value="${f}">${f}</option>`).join('');
         list.innerHTML = data.folders.map(fName => {
             const vids = data.videos.filter(v => v.folder === fName);
-            return `
-                <div class="folder-unit">
-                    <span class="folder-title">${fName}</span>
-                    ${vids.map(v => `
-                        <div class="history-card ${selectedItems.has(v.ts) ? 'selected' : ''}" onclick="launchVideo('${v.id}')">
-                            <div class="custom-check" onclick="event.stopPropagation(); toggleSelect(${v.ts})"></div>
-                            <div class="play-thumb">▶</div>
-                            <div class="card-info">
-                                <span>VIDEO ID: ${v.id}</span>
-                            </div>
-                            <div class="copy-link-icon" title="Copy URL" onclick="event.stopPropagation(); copyLink('${v.id}')">🔗</div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
+            return `<div style="margin-bottom:15px;"><span class="folder-title">${fName}</span>
+                ${vids.map(v => `
+                    <div class="history-card" onclick="launchVideo('${v.id}')">
+                        <div class="play-thumb">▶</div>
+                        <div style="flex:1; font-size:10px; font-weight:700;">${v.id}</div>
+                        <div style="color:#555" onclick="event.stopPropagation(); deleteVid(${v.ts})">✕</div>
+                    </div>
+                `).join('')}</div>`;
         }).join('');
     }
 
-    function launchVideo(id) {
-        document.getElementById('floating-cinema').style.display = 'flex';
-        document.getElementById('playerStatus').innerText = "STREAMING: " + id;
-        if(isReady) videoPlayer.loadVideoById(id);
-    }
-
-    function copyLink(id) {
-        const url = `https://www.youtube.com/watch?v=${id}`;
-        navigator.clipboard.writeText(url).then(() => {
-            const toast = document.getElementById('toast');
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 2000);
-        });
-    }
-
-    function toggleSelect(ts) {
-        if(selectedItems.has(ts)) selectedItems.delete(ts);
-        else selectedItems.add(ts);
-        document.getElementById('multiDeleteBtn').style.display = selectedItems.size > 0 ? 'block' : 'none';
+    function deleteVid(ts) {
+        let data = JSON.parse(localStorage.getItem('study_vault_v30'));
+        data[currentEmail].videos = data[currentEmail].videos.filter(v => v.ts !== ts);
+        localStorage.setItem('study_vault_v30', JSON.stringify(data));
         renderLibrary();
     }
 
-    function deleteSelected() {
-        if(confirm(`Remove ${selectedItems.size} items?`)) {
-            let data = JSON.parse(localStorage.getItem('study_vault_v24'));
-            data[currentEmail].videos = data[currentEmail].videos.filter(v => !selectedItems.has(v.ts));
-            localStorage.setItem('study_vault_v24', JSON.stringify(data));
-            selectedItems.clear();
-            document.getElementById('multiDeleteBtn').style.display = 'none';
-            renderLibrary();
-        }
+    function addTask() {
+        let data = JSON.parse(localStorage.getItem('study_vault_v30'));
+        data[currentEmail].tasks.push({text: document.getElementById('taskInput').value, ts: Date.now()});
+        localStorage.setItem('study_vault_v30', JSON.stringify(data));
+        document.getElementById('taskInput').value = "";
+        renderTasks();
     }
 
-    function togglePlayer() {
-        const p = document.getElementById('floating-cinema');
-        p.style.display = (p.style.display === 'flex') ? 'none' : 'flex';
+    function renderTasks() {
+        let data = JSON.parse(localStorage.getItem('study_vault_v30'))[currentEmail];
+        document.getElementById('taskList').innerHTML = data.tasks.map(t => `
+            <div style="background:#181818; padding:8px; border-radius:5px; margin-bottom:5px; font-size:11px; display:flex; justify-content:space-between;">
+                ${t.text} <span onclick="deleteTask(${t.ts})" style="color:red; cursor:pointer;">✕</span>
+            </div>`).join('');
+    }
+
+    function deleteTask(ts) {
+        let data = JSON.parse(localStorage.getItem('study_vault_v30'));
+        data[currentEmail].tasks = data[currentEmail].tasks.filter(t => t.ts !== ts);
+        localStorage.setItem('study_vault_v30', JSON.stringify(data));
+        renderTasks();
     }
 
     function addVideo() {
         const url = document.getElementById('vidUrl').value;
-        const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-        const id = (match && match[2].length === 11) ? match[2] : null;
-        if(!id) return alert("Invalid URL");
-        let data = JSON.parse(localStorage.getItem('study_vault_v24'));
-        data[currentEmail].videos.push({ id, folder: document.getElementById('folderSelect').value, ts: Date.now() });
-        localStorage.setItem('study_vault_v24', JSON.stringify(data));
-        renderLibrary();
-        document.getElementById('vidUrl').value = "";
-    }
-
-    function addFolder() {
-        const name = document.getElementById('folderInput').value.trim();
-        if(!name) return;
-        let data = JSON.parse(localStorage.getItem('study_vault_v24'));
-        if(!data[currentEmail].folders.includes(name)) {
-            data[currentEmail].folders.push(name);
-            localStorage.setItem('study_vault_v24', JSON.stringify(data));
+        const id = url.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|\/embed\/))([^?&]+)/)?.[1];
+        if(id) {
+            let data = JSON.parse(localStorage.getItem('study_vault_v30'));
+            data[currentEmail].videos.push({ id, folder: document.getElementById('folderSelect').value, ts: Date.now() });
+            localStorage.setItem('study_vault_v30', JSON.stringify(data));
             renderLibrary();
-            document.getElementById('folderInput').value = "";
         }
     }
 
+    function addFolder() {
+        let data = JSON.parse(localStorage.getItem('study_vault_v30'));
+        data[currentEmail].folders.push(document.getElementById('folderInput').value);
+        localStorage.setItem('study_vault_v30', JSON.stringify(data));
+        renderLibrary();
+    }
+
     function playMusic() {
-        const url = document.getElementById('musicUrl').value;
-        const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-        const id = (match && match[2].length === 11) ? match[2] : null;
+        const id = document.getElementById('musicUrl').value.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|\/embed\/))([^?&]+)/)?.[1];
         if(id) musicPlayer.loadVideoById(id);
     }
     function pauseMusic() { musicPlayer.pauseVideo(); }
-
-    function handlePDF(input) {
-        if (input.files[0]) document.getElementById('pdfFrame').src = URL.createObjectURL(input.files[0]);
+    function setMusicVolume(v) { if(musicPlayer) musicPlayer.setVolume(v); }
+    function startTimer() { let start = Date.now(); setInterval(() => { document.getElementById('timer').innerText = new Date(Date.now() - start).toISOString().substr(11, 8); }, 1000); }
+    function buildCalendar() {
+        const now = new Date();
+        document.getElementById('calMonth').innerText = now.toLocaleString('default', { month: 'long' });
+        document.getElementById('calYear').innerText = now.getFullYear();
+        const grid = document.getElementById('calGrid');
+        grid.innerHTML = ["S","M","T","W","T","F","S"].map(d => `<div class="cal-weekday">${d}</div>`).join('');
+        const first = new Date(now.getFullYear(), now.getMonth(), 1).getDay();
+        const total = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+        for(let i=0; i<first; i++) grid.innerHTML += `<div></div>`;
+        for(let d=1; d<=total; d++) grid.innerHTML += `<div class="cal-day ${d===now.getDate()?'cal-today':''}">${d}</div>`;
     }
-
+    function togglePlayer() { const p = document.getElementById('floating-cinema'); p.style.display = p.style.display === 'flex' ? 'none' : 'flex'; }
+    function handlePDF(input) { if(input.files[0]) document.getElementById('pdfFrame').src = URL.createObjectURL(input.files[0]); }
     function shareWhatsApp() {
-        let data = JSON.parse(localStorage.getItem('study_vault_v24'))[currentEmail];
-        let text = data.videos.map(v => "https://youtu.be/" + v.id).join("\n");
-        window.open(`https://wa.me/?text=${encodeURIComponent("STUDY LOG:\n"+text)}`);
+        let data = JSON.parse(localStorage.getItem('study_vault_v30'))[currentEmail];
+        window.open(`https://wa.me/?text=${encodeURIComponent("LOG:\n"+data.videos.map(v=>"https://youtu.be/"+v.id).join("\n"))}`);
     }
 
     interact('#floating-cinema').draggable({
